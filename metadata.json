@@ -1,0 +1,6 @@
+{
+  "name": "Nagrik Sahyog",
+  "description": "An AI-First Civic and Community Issues Management Platform bridging citizens and municipal authorities with automated triage.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

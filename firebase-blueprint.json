@@ -1,0 +1,46 @@
+{
+  "entities": {
+    "Issue": {
+      "title": "Issue",
+      "description": "A reported civic issue complaint ticket",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" },
+        "address": { "type": "string" },
+        "landmark": { "type": "string" },
+        "department": { "type": "string", "enum": ["pwd", "sanitation", "electricity", "water"] },
+        "description": { "type": "string" },
+        "beforeImage": { "type": "string" },
+        "afterImage": { "type": "string" },
+        "status": { "type": "string", "enum": ["unassigned", "in_progress", "pending", "resolved"] },
+        "contractorName": { "type": "string" },
+        "assignedAt": { "type": "string" },
+        "resolvedAt": { "type": "string" },
+        "rating": { "type": "integer" },
+        "feedbackText": { "type": "string" },
+        "feedbackSubmittedAt": { "type": "string" },
+        "aiAuditing": { "type": "boolean" },
+        "aiConfidence": { "type": "integer" },
+        "aiAuditError": { "type": "string" },
+        "aiAuditCompleted": { "type": "boolean" },
+        "aiFlagged": { "type": "boolean" },
+        "aiAutoRejected": { "type": "boolean" },
+        "aiFindings": { "type": "array" },
+        "aiReasoning": { "type": "string" },
+        "aiRejectionReason": { "type": "string" },
+        "aiOfficerLog": { "type": "string" }
+      },
+      "required": ["id", "name", "email", "address", "department", "description", "beforeImage", "status"]
+    }
+  },
+  "firestore": {
+    "issues/{issueId}": {
+      "schema": "Issue",
+      "description": "Collection of all civic complaints and issues"
+    }
+  }
+}

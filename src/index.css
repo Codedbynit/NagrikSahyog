@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+:root {
+  /* Primary — Deep Saffron (not orange, not yellow — saffron) */
+  --color-primary:        #E8571A;  /* main saffron — buttons, CTAs */
+  --color-primary-dark:   #C94B12;  /* hover state */
+  --color-primary-light:  #FEF0E8;  /* tinted backgrounds, badges */
+  --color-primary-muted:  #F4C4A8;  /* borders with saffron tint */
+
+  /* Secondary — India Navy */
+  --color-navy:           #1A3057;  /* headings, admin elements */
+  --color-navy-light:     #EEF2F8;  /* navy tint backgrounds */
+  --color-navy-muted:     #6B85A6;  /* secondary navy text */
+
+  /* Accent — Ashoka Green */
+  --color-green:          #138808;  /* success, resolved, verified */
+  --color-green-light:    #E8F5E3;  /* success backgrounds */
+
+  /* Neutrals */
+  --color-bg:             #FAFAF8;  /* page background — warm white, not cold grey */
+  --color-surface:        #FFFFFF;  /* card backgrounds */
+  --color-border:         #EDE8E3;  /* warm-tinted border, not grey */
+  --color-text-primary:   #1A1A1A;  
+  --color-text-secondary: #5C5449;  /* warm grey, not cold grey */
+  --color-text-muted:     #A89F96;  /* warm muted */
+
+  /* Status colors (keep functional) */
+  --color-unassigned:     #D97706;  /* amber */
+  --color-dispatched:     #2563EB;  /* blue */
+  --color-verify:         #7C3AED;  /* violet */
+  --color-resolved:       #138808;  /* use Ashoka green */
+
+  /* Department accent colors */
+  --dept-pwd:             #D97706;  /* amber — roads */
+  --dept-waste:           #138808;  /* green — sanitation */
+  --dept-electric:        #B45309;  /* dark amber — electricity */
+  --dept-water:           #0369A1;  /* deep blue — water */
+}
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+  --font-hindi: "Noto Sans Devanagari", sans-serif;
+  --font-heading: "Plus Jakarta Sans", sans-serif;
+  
+  --color-primary: var(--color-primary);
+  --color-primary-dark: var(--color-primary-dark);
+  --color-primary-light: var(--color-primary-light);
+  --color-primary-muted: var(--color-primary-muted);
+  --color-navy: var(--color-navy);
+  --color-navy-light: var(--color-navy-light);
+  --color-navy-muted: var(--color-navy-muted);
+  --color-green: var(--color-green);
+  --color-green-light: var(--color-green-light);
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-border: var(--color-border);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-muted: var(--color-text-muted);
+  
+  --color-unassigned: var(--color-unassigned);
+  --color-dispatched: var(--color-dispatched);
+  --color-verify: var(--color-verify);
+  --color-resolved: var(--color-resolved);
+  
+  --color-dept-pwd: var(--dept-pwd);
+  --color-dept-waste: var(--dept-waste);
+  --color-dept-electric: var(--dept-electric);
+  --color-dept-water: var(--dept-water);
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+}
+
+.lang-hi {
+  font-family: "Noto Sans Devanagari", sans-serif !important;
+  line-height: 1.9 !important;
+}
+
+.lang-hi * {
+  font-family: "Noto Sans Devanagari", sans-serif !important;
+}
+
+.lang-en {
+  font-family: "Plus Jakarta Sans", sans-serif !important;
+  line-height: 1.6 !important;
+}
+
+.lang-en * {
+  font-family: "Plus Jakarta Sans", sans-serif !important;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.4); }
+}
+
+.animate-pulse-custom {
+  animation: pulse 2s infinite;
+}
+
+/* Custom scrollbar styling for the ticket drawer */
+.ticket-drawer-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ticket-drawer-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ticket-drawer-body::-webkit-scrollbar-thumb {
+  background: #EDE8E3;
+  border-radius: 4px;
+}
+
+.ticket-drawer-body::-webkit-scrollbar-thumb:hover {
+  background: #A89F96;
+}
+
+@keyframes aiProgress {
+  0% { width: 0%; }
+  60% { width: 70%; }
+  85% { width: 88%; }
+  100% { width: 100%; }
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.animate-ai-progress {
+  animation: aiProgress 2.5s ease-out forwards;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, #F0F0F0 25%, #E0E0E0 50%, #F0F0F0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+
