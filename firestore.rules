@@ -32,6 +32,10 @@ service cloud.firestore {
         && data.status in ['unassigned', 'in_progress', 'pending', 'resolved'];
     }
 
+    match /test/connection {
+      allow read: if true;
+    }
+
     match /issues/{issueId} {
       // Allow single document get operations if valid ID
       allow get: if isValidId(issueId);
