@@ -1,10 +1,10 @@
 {
-  "projectId": "celestial-point-jgxqk",
-  "appId": "1:183605504130:web:6790d6c365c5353fc8ec9b",
-  "apiKey": "AIzaSyDCUxxzOa98Vn8itPXsQzREpI-mbz9XTso",
-  "authDomain": "celestial-point-jgxqk.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-nagriksahyog-afce6766-c556-404c-9f5f-3cf964c943f3",
-  "storageBucket": "celestial-point-jgxqk.firebasestorage.app",
-  "messagingSenderId": "183605504130",
-  "measurementId": ""
+  "projectId": "nagriksahyog",
+  "appId": "1:1086189916282:web:eb5f33f15ab29f8202ebc3",
+  "apiKey": "AIzaSyBzRZ8CehctdjU6300YqK2-nWZlIJ-rbMM",
+  "authDomain": "nagriksahyog.firebaseapp.com",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "nagriksahyog.firebasestorage.app",
+  "messagingSenderId": "1086189916282",
+  "measurementId": "G-X12BFCXDJV"
 }

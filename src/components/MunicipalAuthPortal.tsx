@@ -132,10 +132,18 @@ export function MunicipalAuthPortal({ currentLang, onBackToHome, onSuccess }: Mu
         friendlyError = currentLang === 'en'
           ? 'Incorrect password. Account access is strictly logged.'
           : 'गलत पासवर्ड। खाता पहुंच कड़ाई से लॉग की जाती है।';
+      } else if (err.code === 'auth/configuration-not-found') {
+        friendlyError = currentLang === 'en'
+          ? 'Firebase Authentication service is not yet enabled or configured in your Firebase Console. Please go to your Firebase Console under "Build > Authentication" and click "Get Started" to initialize it.'
+          : 'आपके फायरबेस कंसोल में फायरबेस प्रमाणीकरण सेवा अभी तक सक्षम या कॉन्फ़िगर नहीं की गई है। कृपया अपने फायरबेस कंसोल में "Build > Authentication" पर जाएं और इसे प्रारंभ करने के लिए "Get Started" पर क्लिक करें।';
       } else if (err.code === 'auth/operation-not-allowed') {
         friendlyError = currentLang === 'en'
-          ? 'Email/Password authentication is disabled. Please enable "Email/Password" sign-in provider in the Firebase Console (Authentication > Sign-in method).'
-          : 'ईमेल/पासवर्ड प्रमाणीकरण अक्षम है। कृपया फायरबेस कंसोल में "Email/Password" सक्षम करें (Authentication > Sign-in method)।';
+          ? 'Email/Password authentication provider is disabled. Please enable the "Email/Password" provider in your Firebase Console (Authentication > Sign-in method).'
+          : 'ईमेल/पासवर्ड प्रमाणीकरण प्रदाता अक्षम है। कृपया अपने फायरबेस कंसोल में "Email/Password" प्रदाता सक्षम करें (Authentication > Sign-in method)।';
+      } else if (err.code === 'auth/unauthorized-domain') {
+        friendlyError = currentLang === 'en'
+          ? `This domain (${window.location.hostname}) is not authorized. Please add it to Authorized Domains in your Firebase Console (Authentication > Settings > Authorized Domains).`
+          : `यह डोमेन (${window.location.hostname}) अधिकृत नहीं है। कृपया इसे अपने फायरबेस कंसोल (Authentication > Settings > Authorized Domains) में अधिकृत डोमेन में जोड़ें।`;
       }
       setError(friendlyError);
     } finally {
@@ -185,10 +193,18 @@ export function MunicipalAuthPortal({ currentLang, onBackToHome, onSuccess }: Mu
         friendlyError = currentLang === 'en'
           ? 'Invalid email format.'
           : 'अमान्य ईमेल प्रारूप।';
+      } else if (err.code === 'auth/configuration-not-found') {
+        friendlyError = currentLang === 'en'
+          ? 'Firebase Authentication service is not yet enabled or configured in your Firebase Console. Please go to your Firebase Console under "Build > Authentication" and click "Get Started" to initialize it.'
+          : 'आपके फायरबेस कंसोल में फायरबेस प्रमाणीकरण सेवा अभी तक सक्षम या कॉन्फ़िगर नहीं की गई है। कृपया अपने फायरबेस कंसोल में "Build > Authentication" पर जाएं और इसे प्रारंभ करने के लिए "Get Started" पर क्लिक करें।';
       } else if (err.code === 'auth/operation-not-allowed') {
         friendlyError = currentLang === 'en'
-          ? 'Email/Password authentication is disabled. Please enable "Email/Password" sign-in provider in the Firebase Console (Authentication > Sign-in method).'
-          : 'ईमेल/पासवर्ड प्रमाणीकरण अक्षम है। कृपया फायरबेस कंसोल में "Email/Password" सक्षम करें (Authentication > Sign-in method)।';
+          ? 'Email/Password authentication provider is disabled. Please enable the "Email/Password" provider in your Firebase Console (Authentication > Sign-in method).'
+          : 'ईमेल/पासवर्ड प्रमाणीकरण प्रदाता अक्षम है। कृपया अपने फायरबेस कंसोल में "Email/Password" प्रदाता सक्षम करें (Authentication > Sign-in method)।';
+      } else if (err.code === 'auth/unauthorized-domain') {
+        friendlyError = currentLang === 'en'
+          ? `This domain (${window.location.hostname}) is not authorized. Please add it to Authorized Domains in your Firebase Console (Authentication > Settings > Authorized Domains).`
+          : `यह डोमेन (${window.location.hostname}) अधिकृत नहीं है। कृपया इसे अपने फायरबेस कंसोल (Authentication > Settings > Authorized Domains) में अधिकृत डोमेन में जोड़ें।`;
       }
       setError(friendlyError);
     } finally {
@@ -244,6 +260,18 @@ export function MunicipalAuthPortal({ currentLang, onBackToHome, onSuccess }: Mu
         friendlyError = currentLang === 'en'
           ? 'Sign-in popup was blocked by your browser. Please allow popups for this site.'
           : 'साइन-इन पॉपअप आपके ब्राउज़र द्वारा ब्लॉक कर दिया गया था। कृपया इस साइट के लिए पॉपअप की अनुमति दें।';
+      } else if (err.code === 'auth/configuration-not-found') {
+        friendlyError = currentLang === 'en'
+          ? 'Firebase Authentication service is not yet enabled or configured in your Firebase Console. Please go to your Firebase Console under "Build > Authentication" and click "Get Started" to initialize it.'
+          : 'आपके फायरबेस कंसोल में फायरबेस प्रमाणीकरण सेवा अभी तक सक्षम या कॉन्फ़िगर नहीं की गई है। कृपया अपने फायरबेस कंसोल में "Build > Authentication" पर जाएं और इसे प्रारंभ करने के लिए "Get Started" पर क्लिक करें।';
+      } else if (err.code === 'auth/operation-not-allowed') {
+        friendlyError = currentLang === 'en'
+          ? 'Google Sign-In provider is disabled. Please enable "Google" as a Sign-in provider in your Firebase Console (Authentication > Sign-in method).'
+          : 'गूगल साइन-इन प्रदाता अक्षम है। कृपया अपने फायरबेस कंसोल में "Google" प्रदाता सक्षम करें (Authentication > Sign-in method)।';
+      } else if (err.code === 'auth/unauthorized-domain') {
+        friendlyError = currentLang === 'en'
+          ? `This domain (${window.location.hostname}) is not authorized for OAuth. Please add it to Authorized Domains in your Firebase Console (Authentication > Settings > Authorized Domains).`
+          : `यह डोमेन (${window.location.hostname}) OAuth के लिए अधिकृत नहीं है। कृपया इसे अपने फायरबेस कंसोल (Authentication > Settings > Authorized Domains) में अधिकृत डोमेन में जोड़ें।`;
       }
       setError(friendlyError);
     } finally {
