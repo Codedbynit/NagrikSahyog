@@ -118,7 +118,18 @@ export function MunicipalAuthPortal({ currentLang, onBackToHome, onSuccess }: Mu
         onSuccess();
       }, 1000);
     } catch (err: any) {
-      console.error(err);
+      const isInputOrUserError = [
+        'auth/invalid-credential',
+        'auth/user-not-found',
+        'auth/wrong-password',
+        'auth/invalid-email'
+      ].includes(err?.code);
+      
+      if (isInputOrUserError) {
+        console.warn('Sign In validation warning:', err?.message || err);
+      } else {
+        console.error('Sign In error:', err);
+      }
       let friendlyError = err.message;
       if (err.code === 'auth/invalid-credential') {
         friendlyError = currentLang === 'en' 
@@ -146,6 +157,51 @@ export function MunicipalAuthPortal({ currentLang, onBackToHome, onSuccess }: Mu
           : `यह डोमेन (${window.location.hostname}) अधिकृत नहीं है। कृपया इसे अपने फायरबेस कंसोल (Authentication > Settings > Authorized Domains) में अधिकृत डोमेन में जोड़ें।`;
       }
       setError(friendlyError);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleQuickLogin = async (demoEmail: string, demoPassword: string, displayName: string, userRole: 'officer' | 'contractor') => {
+    setError(null);
+    setLoading(true);
+    setSuccessMsg(null);
+    try {
+      try {
+        // Try sign in first
+        await signInWithEmailAndPassword(auth, demoEmail, demoPassword);
+      } catch (signInErr: any) {
+        // If user does not exist, or credential is unrecognized (which could mean user doesn't exist yet)
+        if (signInErr.code === 'auth/user-not-found' || signInErr.code === 'auth/invalid-credential') {
+          try {
+            // Register them seamlessly
+            const userCredential = await createUserWithEmailAndPassword(auth, demoEmail, demoPassword);
+            await updateProfile(userCredential.user, {
+              displayName: `${displayName} | ${userRole === 'officer' ? 'Officer' : 'Contractor'}`
+            });
+          } catch (regErr: any) {
+            if (regErr.code === 'auth/email-already-in-use') {
+              // If already created, try sign in again
+              await signInWithEmailAndPassword(auth, demoEmail, demoPassword);
+            } else {
+              throw regErr;
+            }
+          }
+        } else {
+          throw signInErr;
+        }
+      }
+      setSuccessMsg(
+        currentLang === 'en' 
+          ? `Clearance approved! Welcome back, ${displayName}.` 
+          : `अनुमति स्वीकृत! वापस स्वागत है, ${displayName}।`
+      );
+      setTimeout(() => {
+        onSuccess();
+      }, 1000);
+    } catch (err: any) {
+      console.error('Quick login error:', err);
+      setError(err?.message || 'Authentication failed');
     } finally {
       setLoading(false);
     }
@@ -179,7 +235,17 @@ export function MunicipalAuthPortal({ currentLang, onBackToHome, onSuccess }: Mu
         onSuccess();
       }, 1200);
     } catch (err: any) {
-      console.error(err);
+      const isInputOrUserError = [
+        'auth/email-already-in-use',
+        'auth/weak-password',
+        'auth/invalid-email'
+      ].includes(err?.code);
+      
+      if (isInputOrUserError) {
+        console.warn('Registration validation warning:', err?.message || err);
+      } else {
+        console.error('Registration error:', err);
+      }
       let friendlyError = err.message;
       if (err.code === 'auth/email-already-in-use') {
         friendlyError = currentLang === 'en'
@@ -250,7 +316,16 @@ export function MunicipalAuthPortal({ currentLang, onBackToHome, onSuccess }: Mu
         onSuccess();
       }, 1200);
     } catch (err: any) {
-      console.error(err);
+      const isUserCancelled = [
+        'auth/popup-closed-by-user',
+        'auth/cancelled-popup-request'
+      ].includes(err?.code);
+      
+      if (isUserCancelled) {
+        console.warn('Google Auth popup closed or cancelled by user:', err?.message || err);
+      } else {
+        console.error('Google Auth error:', err);
+      }
       let friendlyError = err.message;
       if (err.code === 'auth/popup-closed-by-user') {
         friendlyError = currentLang === 'en'
@@ -282,25 +357,6 @@ export function MunicipalAuthPortal({ currentLang, onBackToHome, onSuccess }: Mu
   return (
     <div className="min-h-[80vh] flex items-center justify-center p-4 sm:p-6" id="municipal-auth-container">
       <div className="w-full max-w-md bg-white border border-[#EDE8E3] rounded-2xl shadow-xl overflow-hidden relative">
-        {/* Ashoka Chakra watermark background */}
-        <div className="absolute right-[-60px] top-[-60px] opacity-[0.03] pointer-events-none select-none">
-          <svg width="240" height="240" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="45" fill="none" stroke="#1A3057" strokeWidth="2" />
-            <circle cx="50" cy="50" r="8" fill="none" stroke="#1A3057" strokeWidth="1" />
-            {[...Array(24)].map((_, i) => (
-              <line
-                key={i}
-                x1="50"
-                y1="50"
-                x2={50 + 45 * Math.cos((i * 15 * Math.PI) / 180)}
-                y2={50 + 45 * Math.sin((i * 15 * Math.PI) / 180)}
-                stroke="#1A3057"
-                strokeWidth="0.5"
-              />
-            ))}
-          </svg>
-        </div>
-
         {/* Header Ribbon (Saffron, White, Green) */}
         <div className="h-1.5 w-full flex">
           <div className="bg-[#FF9933] flex-1"></div>
@@ -514,6 +570,86 @@ export function MunicipalAuthPortal({ currentLang, onBackToHome, onSuccess }: Mu
                   </svg>
                   <span>{currentLang === 'en' ? 'Sign In with Google' : 'गूगल के साथ साइन इन करें'}</span>
                 </button>
+
+                {/* Highly Functional Quick Login Pickers */}
+                <div className="pt-2 border-t border-[#EDE8E3] mt-4">
+                  <div className="relative flex py-1 items-center mb-2.5">
+                    <div className="flex-grow border-t border-[#EDE8E3]"></div>
+                    <span className="flex-shrink mx-3 text-[10px] text-[#A89F96] font-mono tracking-wider font-bold">DEMO ROLES QUICK-ACCESS</span>
+                    <div className="flex-grow border-t border-[#EDE8E3]"></div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    {/* Municipal Officer */}
+                    <button
+                      type="button"
+                      onClick={() => handleQuickLogin('officer@municipal.gov.in', 'password123', 'Municipal Officer', 'officer')}
+                      disabled={loading}
+                      className="w-full text-left p-2 bg-slate-50 border border-slate-200 hover:border-[#1A3057] hover:bg-slate-100/50 rounded-lg flex items-center justify-between transition-all group cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-[10px] shrink-0">
+                          OFF
+                        </div>
+                        <div>
+                          <p className="text-[11px] font-bold text-[#1A3057] group-hover:text-blue-700 transition-colors">
+                            {currentLang === 'en' ? 'Municipal Command Officer' : 'नगर निगम कमांड अधिकारी'}
+                          </p>
+                          <p className="text-[9px] text-[#8C8276]">officer@municipal.gov.in</p>
+                        </div>
+                      </div>
+                      <span className="text-[9px] font-extrabold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-100">
+                        {currentLang === 'en' ? 'Quick Login' : 'लॉगिन'}
+                      </span>
+                    </button>
+
+                    {/* Contractor - Standard Roads Co */}
+                    <button
+                      type="button"
+                      onClick={() => handleQuickLogin('roads.contractor@municipal.gov.in', 'password123', 'Standard Roads Co.', 'contractor')}
+                      disabled={loading}
+                      className="w-full text-left p-2 bg-slate-50 border border-slate-200 hover:border-[#E8571A] hover:bg-slate-100/50 rounded-lg flex items-center justify-between transition-all group cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 font-bold text-[10px] shrink-0">
+                          RDS
+                        </div>
+                        <div>
+                          <p className="text-[11px] font-bold text-[#1A3057] group-hover:text-[#E8571A] transition-colors">
+                            {currentLang === 'en' ? 'Contractor: Standard Roads Co.' : 'Standard Roads Co. (ठेकेदार)'}
+                          </p>
+                          <p className="text-[9px] text-[#8C8276]">roads.contractor@municipal.gov.in</p>
+                        </div>
+                      </div>
+                      <span className="text-[9px] font-extrabold bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-100">
+                        {currentLang === 'en' ? 'Quick Login' : 'लॉगिन'}
+                      </span>
+                    </button>
+
+                    {/* Contractor - Shine Sanitation Group */}
+                    <button
+                      type="button"
+                      onClick={() => handleQuickLogin('sanitation.contractor@municipal.gov.in', 'password123', 'Shine Sanitation Group', 'contractor')}
+                      disabled={loading}
+                      className="w-full text-left p-2 bg-slate-50 border border-slate-200 hover:border-emerald-600 hover:bg-slate-100/50 rounded-lg flex items-center justify-between transition-all group cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-[10px] shrink-0">
+                          SNT
+                        </div>
+                        <div>
+                          <p className="text-[11px] font-bold text-[#1A3057] group-hover:text-emerald-700 transition-colors">
+                            {currentLang === 'en' ? 'Contractor: Shine Sanitation Group' : 'Shine Sanitation Group (ठेकेदार)'}
+                          </p>
+                          <p className="text-[9px] text-[#8C8276]">sanitation.contractor@municipal.gov.in</p>
+                        </div>
+                      </div>
+                      <span className="text-[9px] font-extrabold bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded border border-emerald-100">
+                        {currentLang === 'en' ? 'Quick Login' : 'लॉगिन'}
+                      </span>
+                    </button>
+                  </div>
+                </div>
               </motion.form>
             ) : (
               <motion.form

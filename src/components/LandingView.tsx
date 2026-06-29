@@ -321,13 +321,21 @@ export const LandingView: React.FC<LandingViewProps> = ({
           id="admin-card"
         >
           <div>
+            <div className="flex flex-wrap items-center gap-1.5 mb-2.5">
+              <span className="px-2 py-0.5 rounded-full bg-[#E0E7FF] text-[#1A3057] font-bold text-[9px] uppercase tracking-wider">
+                {currentLang === 'en' ? 'Officials' : 'अधिकारी'}
+              </span>
+              <span className="px-2 py-0.5 rounded-full bg-[#E8F5E3] text-[#138808] font-bold text-[9px] uppercase tracking-wider">
+                {currentLang === 'en' ? 'Contractors' : 'ठेकेदार'}
+              </span>
+            </div>
             <h2 className="text-lg sm:text-xl font-bold text-[#1A3057] mb-2 tracking-tight">
-              {currentLang === 'en' ? 'Municipal Command Center' : 'नगर निगम कमांड सेंटर'}
+              {currentLang === 'en' ? 'Command Center & Contractor Portal' : 'कमांड सेंटर और ठेकेदार पोर्टल'}
             </h2>
             <p className="text-[#5C5449] text-xs sm:text-sm leading-relaxed mb-4 font-sans font-normal">
               {currentLang === 'en' 
-                ? 'Access administrative dispatch, contractor pipeline management, before/after resolution checks, and live metrics.'
-                : 'प्रशासनिक प्रेषण, ठेकेदार पाइपलाइन प्रबंधन, समाधान से पहले/बाद की जांच और लाइव मेट्रिक्स तक पहुंचें।'
+                ? 'Access administrative dispatch, contractor job pipeline, before/after proof checking, and live resolution audits.'
+                : 'प्रशासनिक प्रेषण, ठेकेदार कार्य पाइपलाइन, समाधान से पहले/बाद के प्रमाण की जाँच और लाइव रिज़ॉल्यूशन ऑडिट तक पहुँचें।'
               }
             </p>
 
@@ -343,7 +351,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 <div className="w-4 h-4 rounded-full bg-[#E0E7FF] flex items-center justify-center text-[#1A3057] shrink-0">
                   <Check className="w-3 h-3 text-[#1A3057]" />
                 </div>
-                <span>{currentLang === 'en' ? 'Contractor assignment with timestamp logging' : 'समय-लॉगिंग के साथ ठेकेदार आवंटन'}</span>
+                <span>{currentLang === 'en' ? 'Contractor job board & proof-of-work upload' : 'ठेकेदार जॉब बोर्ड और कार्य प्रमाण अपलोड'}</span>
               </li>
               <li className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded-full bg-[#E0E7FF] flex items-center justify-center text-[#1A3057] shrink-0">
@@ -381,7 +389,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
-            <span>{currentLang === 'en' ? 'Admin Login' : 'प्रशासनिक लॉगिन'}</span>
+            <span>{currentLang === 'en' ? 'Official & Contractor Access' : 'अधिकारी एवं ठेकेदार लॉगिन'}</span>
           </button>
         </motion.div>
       </div>

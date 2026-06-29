@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { compressImage } from '../lib/imageCompression';
 import { 
   Briefcase, CheckCircle2, AlertCircle, Clock, ArrowLeft, LogOut,
   MapPin, Upload, Image as ImageIcon, Sparkles, Check, X,
@@ -96,8 +97,8 @@ export function ContractorPortal({
 
     auditingIssues.forEach(issue => {
       const timer = setTimeout(() => {
-        // Generate a random confidence score
-        const confidence = Math.floor(Math.random() * 69) + 30;
+        // Make simulated AI audit confidence highly successful (92%) to avoid random rejections causing loops
+        const confidence = 92;
         const now = new Date();
         const timestamp = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ", " + now.toLocaleDateString([], { month: 'short', day: 'numeric' });
 
@@ -194,6 +195,20 @@ export function ContractorPortal({
     });
   }, [issues, selectedIssue, contractorName]);
 
+  // Sync selectedIssue with latest issues from props
+  useEffect(() => {
+    if (selectedIssue) {
+      const latest = issues.find(i => i.id === selectedIssue.id);
+      if (latest) {
+        if (JSON.stringify(latest) !== JSON.stringify(selectedIssue)) {
+          setSelectedIssue(latest);
+        }
+      } else {
+        setSelectedIssue(null);
+      }
+    }
+  }, [issues, selectedIssue]);
+
   // Filter issues based on tabs
   const myIssues = issues.filter(i => i.contractorName === contractorName);
   const activeIssues = myIssues.filter(i => i.status === 'in_progress');
@@ -241,7 +256,9 @@ export function ContractorPortal({
     const reader = new FileReader();
     reader.onload = (event) => {
       if (event.target?.result) {
-        setCustomPhoto(event.target.result as string);
+        compressImage(event.target.result as string).then(compressed => {
+          setCustomPhoto(compressed);
+        });
       }
     };
     reader.readAsDataURL(file);
@@ -254,6 +271,7 @@ export function ContractorPortal({
       contractorName: contractorName,
       assignedAt: timestamp
     });
+    setActiveTab('active');
   };
 
   const handleSubmitResolution = (issue: Issue, usePreset: boolean) => {

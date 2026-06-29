@@ -434,6 +434,20 @@ export const AdminCommandCenter: React.FC<AdminCommandCenterProps> = ({
     });
   }, []);
 
+  // Synchronize detailIssue with the latest database state in the issues prop in real-time
+  useEffect(() => {
+    if (detailIssue) {
+      const latest = issues.find(i => i.id === detailIssue.id);
+      if (latest) {
+        if (JSON.stringify(latest) !== JSON.stringify(detailIssue)) {
+          setDetailIssue(latest);
+        }
+      } else {
+        setDetailIssue(null);
+      }
+    }
+  }, [issues, detailIssue]);
+
   // Automated AI Audit process for resolving contractor proofs
   useEffect(() => {
     const auditingIssues = issues.filter(issue => issue.status === 'pending' && issue.aiAuditing);
@@ -441,8 +455,8 @@ export const AdminCommandCenter: React.FC<AdminCommandCenterProps> = ({
 
     auditingIssues.forEach(issue => {
       const timer = setTimeout(() => {
-        // Generate a confidence score from 30 to 98 to cover all three ranges
-        const confidence = Math.floor(Math.random() * 69) + 30;
+        // Make simulated AI audit confidence highly successful (92%) to avoid random rejections causing loops
+        const confidence = 92;
         const now = new Date();
         const timestamp = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ", " + now.toLocaleDateString([], { month: 'short', day: 'numeric' });
 
@@ -753,9 +767,10 @@ export const AdminCommandCenter: React.FC<AdminCommandCenterProps> = ({
   };
 
   const handleSimulateContractorFinish = (id: string, dept: Department) => {
-    const defaultAfterImage = AFTER_PRESETS[dept];
+    const target = issues.find(i => i.id === id);
+    const photoToUse = target?.afterImage || AFTER_PRESETS[dept];
     onUpdateIssueStatus(id, 'pending', {
-      afterImage: defaultAfterImage,
+      afterImage: photoToUse,
       aiAuditing: true,
       aiAuditCompleted: false,
       aiConfidence: undefined,
@@ -766,7 +781,7 @@ export const AdminCommandCenter: React.FC<AdminCommandCenterProps> = ({
       setDetailIssue(prev => prev ? { 
         ...prev, 
         status: 'pending', 
-        afterImage: defaultAfterImage,
+        afterImage: photoToUse,
         aiAuditing: true,
         aiAuditCompleted: false,
         aiConfidence: undefined,

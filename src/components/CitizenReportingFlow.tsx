@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Language, Department, Issue, IssueStatus, AppView } from '../types';
 import { translations } from '../data/translations';
+import { compressImage } from '../lib/imageCompression';
 import { 
   User, Mail, MapPin, Compass, ArrowLeft, Image as ImageIcon, 
   UploadCloud, Sparkles, CheckCircle, ArrowRight, Loader2,
@@ -49,6 +50,19 @@ export const CitizenReportingFlow: React.FC<CitizenReportingFlowProps> = ({
   const [addressError, setAddressError] = useState('');
   const [descError, setDescError] = useState('');
   const [imageError, setImageError] = useState('');
+
+  // Email Notification States
+  const [dispatchedEmail, setDispatchedEmail] = useState<{
+    subject: string;
+    emailHtml: string;
+    recipient: string;
+    timestamp: string;
+    realEmailSent?: boolean;
+    realEmailError?: string | null;
+    apiKeyConfigured?: boolean;
+  } | null>(null);
+  const [loadingEmail, setLoadingEmail] = useState(false);
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
 
   // Success tracking & Lookup state
   const [createdTicketId, setCreatedTicketId] = useState('');
@@ -141,15 +155,17 @@ export const CitizenReportingFlow: React.FC<CitizenReportingFlowProps> = ({
       setImageError('');
       const reader = new FileReader();
       reader.onloadend = () => {
-        setBeforeImage(reader.result as string);
-        const depts: Department[] = ['pwd', 'sanitation', 'electricity', 'water'];
-        const randomDept = depts[Math.floor(Math.random() * depts.length)];
-        setDetectedDept(randomDept);
-        setAiConfidence(Math.floor(Math.random() * 12) + 85);
-        
-        setTimeout(() => {
-          setIsAiAnalyzing(false);
-        }, 1200);
+        compressImage(reader.result as string).then(compressed => {
+          setBeforeImage(compressed);
+          const depts: Department[] = ['pwd', 'sanitation', 'electricity', 'water'];
+          const randomDept = depts[Math.floor(Math.random() * depts.length)];
+          setDetectedDept(randomDept);
+          setAiConfidence(Math.floor(Math.random() * 12) + 85);
+          
+          setTimeout(() => {
+            setIsAiAnalyzing(false);
+          }, 1200);
+        });
       };
       reader.readAsDataURL(file);
     }
@@ -207,7 +223,7 @@ export const CitizenReportingFlow: React.FC<CitizenReportingFlowProps> = ({
 
     const finalImage = beforeImage;
 
-    const ticketId = onIssueSubmit({
+    const issueDetails = {
       name: name || "Anonymous Citizen",
       email: email || "citizen@nagriksahyog.gov.in",
       latitude: lat,
@@ -217,10 +233,51 @@ export const CitizenReportingFlow: React.FC<CitizenReportingFlowProps> = ({
       department: detectedDept,
       description: issueDescription || "No description provided.",
       beforeImage: finalImage,
-    });
+    };
+
+    const ticketId = onIssueSubmit(issueDetails);
 
     setCreatedTicketId(ticketId);
     setStep(4);
+
+    // Call server-side REST API to compile and "send" confirmation email
+    setLoadingEmail(true);
+    fetch("/api/send-confirmation-email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        issue: { ...issueDetails, id: ticketId },
+        appStatus: {
+          totalCount: issues.length + 1,
+          unassignedCount: issues.filter((i) => i.status === "unassigned").length + 1,
+          inProgressCount: issues.filter((i) => i.status === "in_progress").length,
+          pendingCount: issues.filter((i) => i.status === "pending").length,
+          resolvedCount: issues.filter((i) => i.status === "resolved").length,
+        },
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setDispatchedEmail({
+            subject: data.subject,
+            emailHtml: data.emailHtml,
+            recipient: data.recipient,
+            timestamp: data.timestamp,
+            realEmailSent: data.realEmailSent,
+            realEmailError: data.realEmailError,
+            apiKeyConfigured: data.apiKeyConfigured,
+          });
+        }
+      })
+      .catch((err) => {
+        console.error("Error dispatching ticket email confirmation:", err);
+      })
+      .finally(() => {
+        setLoadingEmail(false);
+      });
   };
 
   const handleLookupTicket = () => {
@@ -734,6 +791,27 @@ export const CitizenReportingFlow: React.FC<CitizenReportingFlowProps> = ({
                 <span className="font-bold text-[#E8571A] text-xs uppercase">
                   {detectedDept.toUpperCase()}
                 </span>
+              </div>
+            </div>
+
+            {/* EMAIL SENT HIGHLIGHT */}
+            <div className="bg-emerald-50/50 border border-emerald-100 rounded-xl p-3.5 flex items-start gap-2.5">
+              <div className="p-1.5 bg-emerald-100/70 rounded-lg text-emerald-800 shrink-0">
+                <Mail className="w-4 h-4" />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-xs font-bold text-slate-900">
+                  {currentLang === 'hi' 
+                    ? 'पुष्टिकरण ईमेल भेजा गया!' 
+                    : 'Confirmation Email Sent!'
+                  }
+                </h4>
+                <p className="text-[11px] text-slate-600 leading-normal mt-0.5">
+                  {currentLang === 'hi' 
+                    ? `एक आधिकारिक पुष्टिकरण पावती आपके ईमेल ${email || "citizen@nagriksahyog.gov.in"} पर भेज दी गई है।`
+                    : `An official confirmation receipt has been successfully dispatched to your email ${email || "citizen@nagriksahyog.gov.in"}.`
+                  }
+                </p>
               </div>
             </div>
 

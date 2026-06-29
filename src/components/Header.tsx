@@ -19,15 +19,13 @@ export const AshokaChakra: React.FC<{ className?: string; color?: string }> = ({
   className = "w-4 h-4",
   color = "currentColor",
 }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <circle cx="12" cy="12" r="10" />
-    <circle cx="12" cy="12" r="2.5" />
-    {Array.from({ length: 24 }).map((_, i) => {
-      const angle = (i * 15 * Math.PI) / 180;
-      const x2 = 12 + 10 * Math.cos(angle);
-      const y2 = 12 + 10 * Math.sin(angle);
-      return <line key={i} x1="12" y1="12" x2={x2} y2={y2} />;
-    })}
+  <svg viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M3 21h18" />
+    <path d="M5 21V10a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v11" />
+    <path d="M9 21v-4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4" />
+    <path d="M7 12h2" />
+    <path d="M15 12h2" />
+    <path d="M12 3v3" />
   </svg>
 );
 
