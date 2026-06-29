@@ -206,6 +206,7 @@ export default function App() {
             onViewChange={setCurrentView}
             unassignedCount={unassignedCount}
             resolvedCount={resolvedCount}
+            issues={issues}
           />
         )}
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Language, AppView } from '../types';
+import { Language, AppView, Issue } from '../types';
 import { translations } from '../data/translations';
 import { Check, Shield, Clock, Lock, ArrowRight } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
@@ -9,11 +9,15 @@ interface LandingViewProps {
   onViewChange: (view: AppView) => void;
   unassignedCount: number;
   resolvedCount: number;
+  issues: Issue[];
 }
 
 export const LandingView: React.FC<LandingViewProps> = ({
   currentLang,
   onViewChange,
+  unassignedCount,
+  resolvedCount,
+  issues,
 }) => {
   const t = translations[currentLang];
 
@@ -41,11 +45,47 @@ export const LandingView: React.FC<LandingViewProps> = ({
     return () => clearInterval(interval);
   }, [badges.length]);
 
+  const resolvedIssues = React.useMemo(() => {
+    return issues.filter((i) => i.status === 'resolved');
+  }, [issues]);
+
+  const topResolved = React.useMemo(() => {
+    return resolvedIssues.slice(0, 3);
+  }, [resolvedIssues]);
+
+  const getDotColor = (dept: string) => {
+    switch (dept) {
+      case 'pwd': return 'bg-[#D97706]';
+      case 'sanitation': return 'bg-[#E8571A]';
+      case 'electricity': return 'bg-blue-500';
+      case 'water': return 'bg-teal-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  const getDeptResolvedLabel = (dept: string, lang: Language) => {
+    const labelsEn: Record<string, string> = {
+      pwd: 'Road repaired',
+      sanitation: 'Garbage cleared',
+      electricity: 'Streetlight fixed',
+      water: 'Water supply resolved',
+    };
+    const labelsHi: Record<string, string> = {
+      pwd: 'सड़क की मरम्मत की गई',
+      sanitation: 'कचरा साफ किया गया',
+      electricity: 'स्ट्रीटलाइट ठीक की गई',
+      water: 'पानी की आपूर्ति ठीक की गई',
+    };
+    return lang === 'hi'
+      ? (labelsHi[dept] || 'समस्या हल की गई')
+      : (labelsEn[dept] || 'Issue resolved');
+  };
+
   return (
     <div className="py-6 md:py-8 px-6 max-w-[1100px] mx-auto flex flex-col gap-6 md:gap-8 justify-start w-full relative z-10" id="landing-view-container">
       
       {/* Hero Section Layout */}
-      <div className="grid md:grid-cols-12 gap-6 md:gap-8 items-center w-full">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-start w-full mb-2">
         {/* Left Column (Heading + Subtext + Trust Badges) */}
         <div className="md:col-span-7 flex flex-col items-start text-left gap-5">
           {/* Tricolor Strip (Section 6, Item 3) */}
@@ -68,7 +108,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
             )}
           </h1>
           <p 
-            className="text-[15px] text-[#5C5449] leading-[1.7] max-w-[480px] font-sans font-normal"
+            className="text-[15px] text-[#5C5449] leading-[1.7] max-w-[540px] font-sans font-normal"
             id="hero-subtitle"
           >
             {currentLang === 'hi' 
@@ -93,75 +133,87 @@ export const LandingView: React.FC<LandingViewProps> = ({
               </motion.div>
             </AnimatePresence>
           </div>
-
-
         </div>
 
-        {/* Right Column (Visual Proof Element) */}
-        <div className="md:col-span-5 w-full flex justify-center md:justify-end self-stretch">
-          <div className="bg-white border border-[#EDE8E3] border-l-3 border-l-[#E8571A] rounded-[14px] p-[18px] pr-5 pl-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)] flex flex-col justify-between gap-3 w-full max-w-[320px] h-full">
-            {/* Header */}
-            <div className="flex items-center gap-1.5">
-              <span className="relative flex h-1.5 w-1.5 shrink-0">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-[#E8571A] animate-pulse-custom"></span>
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#E8571A]"></span>
-              </span>
-              <span className="text-[12px] font-bold text-[#E8571A]">
-                {currentLang === 'hi' ? 'हाल ही में समाधान' : 'Recently resolved'}
-              </span>
-            </div>
+        {/* Right Column (How it works) */}
+        <div className="md:col-span-5 w-full flex justify-center md:justify-end self-start">
+          <div 
+            className="bg-white border border-[#EDE8E3] rounded-[14px] p-5 md:p-4.5 w-full md:max-w-[340px] self-start text-left"
+            id="how-it-works-card"
+          >
+            <h3 className="text-[12px] font-semibold text-[#A89F96] tracking-[0.05em] uppercase mb-3.5">
+              {currentLang === 'hi' ? 'यह कैसे काम करता है' : 'How it works'}
+            </h3>
 
-            {/* List */}
-            <div className="flex flex-col gap-3">
-              {/* Item 1 */}
-              <div className="flex flex-col gap-0.5">
-                <div className="flex items-center gap-1.5 text-[13px] font-medium text-[#1A1A1A]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#D97706] inline-block shrink-0"></span>
-                  <span>
-                    {currentLang === 'hi' ? 'सड़क के गड्ढे भरे गए · सिविल लाइंस' : 'Pothole filled · Civil Lines'}
-                  </span>
+            <div className="flex flex-col gap-3.5">
+              {/* Step 1 */}
+              <div className="flex gap-3 items-start">
+                <div className="flex flex-col items-center shrink-0">
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold bg-[#FEF0E8] text-[#E8571A]">
+                    1
+                  </div>
+                  <div className="w-[1px] h-2.5 bg-[#EDE8E3] mt-1 mx-auto" />
                 </div>
-                <div className="text-[11px] text-[#A89F96] pl-3">
-                  {currentLang === 'hi' ? '18 घंटे में समाधान' : 'Resolved in 18 hours'}
-                </div>
-              </div>
-
-              <div className="border-t border-[#EDE8E3]" />
-
-              {/* Item 2 */}
-              <div className="flex flex-col gap-0.5">
-                <div className="flex items-center gap-1.5 text-[13px] font-medium text-[#1A1A1A]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#E8571A] inline-block shrink-0"></span>
-                  <span>
-                    {currentLang === 'hi' ? 'कचरा साफ किया गया · हजीरा' : 'Garbage cleared · Hazira'}
-                  </span>
-                </div>
-                <div className="text-[11px] text-[#A89F96] pl-3">
-                  {currentLang === 'hi' ? '6 घंटे में समाधान' : 'Resolved in 6 hours'}
+                <div>
+                  <h4 className="text-[13.5px] font-semibold text-[#1A1A1A]">
+                    {currentLang === 'hi' ? 'एक फ़ोटो खींचें' : 'Snap a photo'}
+                  </h4>
+                  <p className="text-[11.5px] text-[#A89F96] leading-[1.45] mt-0.5 font-sans font-normal">
+                    {currentLang === 'hi' 
+                      ? 'समस्या की फ़ोटो लें — गड्ढा, कचरा, टूटी लाइट, या पानी का रिसाव।' 
+                      : 'Take a picture of the civic issue — pothole, garbage, broken light, or water leakage.'}
+                  </p>
                 </div>
               </div>
 
-              <div className="border-t border-[#EDE8E3]" />
-
-              {/* Item 3 */}
-              <div className="flex flex-col gap-0.5">
-                <div className="flex items-center gap-1.5 text-[13px] font-medium text-[#1A1A1A]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block shrink-0"></span>
-                  <span>
-                    {currentLang === 'hi' ? 'स्ट्रीटलाइट ठीक की गई · लश्कर' : 'Streetlight fixed · Lashkar'}
-                  </span>
+              {/* Step 2 */}
+              <div className="flex gap-3 items-start">
+                <div className="flex flex-col items-center shrink-0">
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold bg-[#EEF2F8] text-[#1A3057]">
+                    2
+                  </div>
+                  <div className="w-[1px] h-2.5 bg-[#EDE8E3] mt-1 mx-auto" />
                 </div>
-                <div className="text-[11px] text-[#A89F96] pl-3">
-                  {currentLang === 'hi' ? '31 घंटे में समाधान' : 'Resolved in 31 hours'}
+                <div>
+                  <h4 className="text-[13.5px] font-semibold text-[#1A1A1A]">
+                    {currentLang === 'hi' ? 'स्वचालित रूटिंग' : 'We route it automatically'}
+                  </h4>
+                  <p className="text-[11.5px] text-[#A89F96] leading-[1.45] mt-0.5 font-sans font-normal">
+                    {currentLang === 'hi' 
+                      ? 'हमारा सिस्टम आपकी फ़ोटो पढ़कर तुरंत सही नगर पालिका विभाग को भेज देता है।' 
+                      : 'Our system reads your photo and sends it to the right municipal department instantly.'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 3 */}
+              <div className="flex gap-3 items-start">
+                <div className="flex flex-col items-center shrink-0">
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold bg-[#E8F5E3] text-[#138808]">
+                    3
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-[13.5px] font-semibold text-[#1A1A1A]">
+                    {currentLang === 'hi' ? 'इनबॉक्स से ट्रैक करें' : 'Track from your inbox'}
+                  </h4>
+                  <p className="text-[11.5px] text-[#A89F96] leading-[1.45] mt-0.5 font-sans font-normal">
+                    {currentLang === 'hi' 
+                      ? 'अपने ईमेल पर ट्रैकिंग लिंक प्राप्त करें। समाधान होने तक हर अपडेट देखें।' 
+                      : 'Get a tracking link on your email. Follow every update until the issue is resolved.'}
+                  </p>
                 </div>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="flex flex-col gap-1.5 pt-2.5 mt-auto border-t border-[#EDE8E3]">
-              <div className="text-center text-[12px] text-[#E8571A] font-semibold">
-                {currentLang === 'hi' ? 'इस महीने 247 समस्याओं का समाधान' : '247 issues resolved this month'}
-              </div>
+            <div className="border-t border-[#F5F5F5] pt-3 mt-1.5 flex flex-col">
+              <span className="text-[10px] text-[#A89F96]">
+                {currentLang === 'hi' ? 'औसत समाधान समय' : 'Average resolution time'}
+              </span>
+              <span className="text-[18px] font-bold text-[#E8571A]">
+                {currentLang === 'hi' ? '48 घंटे' : '48 hours'}
+              </span>
             </div>
           </div>
         </div>
