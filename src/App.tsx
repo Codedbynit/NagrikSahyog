@@ -12,6 +12,7 @@ import { Sparkles, Heart } from 'lucide-react';
 import { collection, onSnapshot, doc, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { db, auth, handleFirestoreError, OperationType, cleanUndefined } from './lib/firebase';
+import { motion } from 'motion/react';
 
 const DEFAULT_ISSUES: Issue[] = [
   {
@@ -272,21 +273,154 @@ export default function App() {
         )}
       </main>
 
-      {/* Minimal Aesthetic Footer */}
-      <footer className="w-full bg-white border-t border-[#EDE8E3] py-6 text-center text-xs text-[#A89F96] font-sans relative z-10">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 justify-center sm:justify-start">
-            <AshokaChakra className="w-3.5 h-3.5 text-[#E8571A]" />
-            <p>
-              &copy; 2026 {translations[currentLang].brand} &middot; {currentLang === 'en' ? 'Municipal Corporation Portal' : 'नगर निगम पोर्टल'}
-            </p>
+      {/* High-Fidelity Professional Footer */}
+      <motion.footer 
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="w-full bg-white border-t border-[#EDE8E3] pt-12 pb-8 text-xs text-[#5C5449] font-sans relative z-10" 
+        id="site-footer"
+      >
+        <div className="max-w-7xl mx-auto px-6 sm:px-8">
+          {/* Main Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-10 pb-10 border-b border-[#F5F5F5]">
+            {/* Column 1: Brand & About */}
+            <div className="md:col-span-4 flex flex-col items-start gap-4">
+              <button
+                onClick={() => setCurrentView('landing')}
+                className="flex items-center gap-2 text-left hover:opacity-85 transition-opacity cursor-pointer"
+                id="footer-brand-logo"
+              >
+                <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm border border-gray-100 shrink-0 overflow-hidden">
+                  <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g transform="rotate(0, 50, 50)">
+                      <path d="M 50 48 C 45 40, 41 32, 39 26 C 41 25, 43 27, 44 30 C 46 36, 48 43, 50 48 Z" fill="#FDA4AF" />
+                      <path d="M 50 48 C 45 40, 36 29, 31 23 C 40 21, 46 29, 49 32 C 49 28, 50 21, 50 21 C 51 21, 51 28, 51 32 C 54 29, 60 21, 69 23 C 64 29, 55 40, 50 48 Z" fill="#EF4444" />
+                      <circle cx="50" cy="14" r="5.5" fill="#EF4444" />
+                    </g>
+                    <g transform="rotate(90, 50, 50)">
+                      <path d="M 50 48 C 45 40, 41 32, 39 26 C 41 25, 43 27, 44 30 C 46 36, 48 43, 50 48 Z" fill="#7DD3FC" />
+                      <path d="M 50 48 C 45 40, 36 29, 31 23 C 40 21, 46 29, 49 32 C 49 28, 50 21, 50 21 C 51 21, 51 28, 51 32 C 54 29, 60 21, 69 23 C 64 29, 55 40, 50 48 Z" fill="#2563EB" />
+                      <circle cx="50" cy="14" r="5.5" fill="#2563EB" />
+                    </g>
+                    <g transform="rotate(180, 50, 50)">
+                      <path d="M 50 48 C 45 40, 41 32, 39 26 C 41 25, 43 27, 44 30 C 46 36, 48 43, 50 48 Z" fill="#BEF264" />
+                      <path d="M 50 48 C 45 40, 36 29, 31 23 C 40 21, 46 29, 49 32 C 49 28, 50 21, 50 21 C 51 21, 51 28, 51 32 C 54 29, 60 21, 69 23 C 64 29, 55 40, 50 48 Z" fill="#84CC16" />
+                      <circle cx="50" cy="14" r="5.5" fill="#84CC16" />
+                    </g>
+                    <g transform="rotate(270, 50, 50)">
+                      <path d="M 50 48 C 45 40, 41 32, 39 26 C 41 25, 43 27, 44 30 C 46 36, 48 43, 50 48 Z" fill="#FDBA74" />
+                      <path d="M 50 48 C 45 40, 36 29, 31 23 C 40 21, 46 29, 49 32 C 49 28, 50 21, 50 21 C 51 21, 51 28, 51 32 C 54 29, 60 21, 69 23 C 64 29, 55 40, 50 48 Z" fill="#9333EA" />
+                      <circle cx="50" cy="14" r="5.5" fill="#9333EA" />
+                    </g>
+                  </svg>
+                </div>
+                <span className="font-sans font-extrabold text-[15px] tracking-tight text-[#1A3057]">
+                  {translations[currentLang].brand}
+                </span>
+              </button>
+              <p className="text-[12px] text-[#8C8276] leading-[1.6] max-w-sm">
+                {currentLang === 'en' 
+                  ? "An advanced, real-time civic grievance routing platform. We leverage secure, zero-password authentication to empower citizens and expedite municipal actions."
+                  : "एक उन्नत, वास्तविक समय नागरिक शिकायत रूटिंग प्लेटफॉर्म। हम नागरिकों को सशक्त बनाने और नगर निगम की कार्रवाई में तेजी लाने के लिए पासवर्ड-रहित प्रमाणीकरण का उपयोग करते हैं।"
+                }
+              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="px-2 py-0.5 rounded-full bg-[#FEF0E8] text-[#E8571A] font-semibold text-[10px]">
+                  {currentLang === 'en' ? "Official Portal" : "आधिकारिक पोर्टल"}
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-[#E8F5E3] text-[#138808] font-semibold text-[10px]">
+                  {currentLang === 'en' ? "SLA 48 Hours" : "समयसीमा: 48 घंटे"}
+                </span>
+              </div>
+            </div>
+
+            {/* Column 2: Civic Verticals */}
+            <div className="md:col-span-3 flex flex-col items-start gap-3">
+              <h4 className="text-[11px] font-bold text-[#1A3057] uppercase tracking-wider">
+                {currentLang === 'en' ? "Civic Departments" : "नागरिक विभाग"}
+              </h4>
+              <ul className="flex flex-col gap-2 text-[#8C8276]">
+                <li className="flex items-center gap-2">
+                  <span className="w-1 h-1 rounded-full bg-[#D97706]" />
+                  <span>{currentLang === 'en' ? "PWD & Road Repairs" : "पीडब्ल्यूडी और सड़क मरम्मत"}</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1 h-1 rounded-full bg-[#E8571A]" />
+                  <span>{currentLang === 'en' ? "Public Waste & Sanitation" : "सार्वजनिक कचरा और स्वच्छता"}</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1 h-1 rounded-full bg-blue-500" />
+                  <span>{currentLang === 'en' ? "Electricity & Lighting" : "बिजली और प्रकाश व्यवस्था"}</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1 h-1 rounded-full bg-teal-500" />
+                  <span>{currentLang === 'en' ? "Water & Sewage Lines" : "पानी और सीवेज लाइनें"}</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 3: Secure Portals */}
+            <div className="md:col-span-3 flex flex-col items-start gap-3">
+              <h4 className="text-[11px] font-bold text-[#1A3057] uppercase tracking-wider">
+                {currentLang === 'en' ? "Secure Access" : "सुरक्षित पहुंच"}
+              </h4>
+              <ul className="flex flex-col gap-2">
+                <li>
+                  <button 
+                    onClick={() => setCurrentView('citizen')}
+                    className="text-[#8C8276] hover:text-[#E8571A] hover:underline transition-colors cursor-pointer text-left"
+                  >
+                    {currentLang === 'en' ? "File Civic Complaint" : "शिकायत दर्ज करें"}
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => setCurrentView('track')}
+                    className="text-[#8C8276] hover:text-[#E8571A] hover:underline transition-colors cursor-pointer text-left"
+                  >
+                    {currentLang === 'en' ? "Track with Magic Link" : "मैजिक लिंक से ट्रैक करें"}
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => setCurrentView('admin')}
+                    className="text-[#8C8276] hover:text-[#E8571A] hover:underline transition-colors cursor-pointer text-left"
+                  >
+                    {currentLang === 'en' ? "Municipal Command Center" : "नगर निगम कमांड सेंटर"}
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 4: National Emblem Accent */}
+            <div className="md:col-span-2 flex flex-col items-start md:items-end gap-3 justify-start text-left md:text-right">
+              <div className="w-10 h-10 rounded-full bg-[#F5F5F5] flex items-center justify-center border border-[#EDE8E3]">
+                <AshokaChakra className="w-6 h-6 text-[#1A3057]" />
+              </div>
+              <p className="text-[10px] text-[#A89F96] leading-relaxed max-w-[160px]">
+                {currentLang === 'en' 
+                  ? "Digital India initiative for fast automated civic grievance resolution." 
+                  : "त्वरित नागरिक शिकायत निवारण के लिए डिजिटल इंडिया पहल।"}
+              </p>
+            </div>
           </div>
-          <p className="flex items-center justify-center gap-1">
-            <span>{currentLang === 'en' ? 'Crafted for civic empowerment with' : 'नागरिक सशक्तिकरण के लिए निर्मित'}</span>
-            <Heart className="w-3 h-3 text-rose-500 fill-rose-500 animate-pulse" />
-          </p>
+
+          {/* Bottom Copyright & Heart Row */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-[#A89F96]">
+            <div className="flex items-center gap-1.5 justify-center sm:justify-start">
+              <span>&copy; 2026 {translations[currentLang].brand}</span>
+              <span>&middot;</span>
+              <span>{currentLang === 'en' ? "Municipal Corporation Gwalior Portal" : "नगर निगम ग्वालियर पोर्टल"}</span>
+            </div>
+            <div className="flex items-center justify-center gap-1 text-[#8C8276]">
+              <span>{currentLang === 'en' ? 'Crafted for civic empowerment with' : 'नागरिक सशक्तिकरण के लिए निर्मित'}</span>
+              <Heart className="w-3 h-3 text-rose-500 fill-rose-500 animate-pulse shrink-0" />
+            </div>
+          </div>
         </div>
-      </footer>
+      </motion.footer>
     </div>
   );
 }

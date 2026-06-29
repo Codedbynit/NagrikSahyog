@@ -87,7 +87,12 @@ export const LandingView: React.FC<LandingViewProps> = ({
       {/* Hero Section Layout */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-start w-full mb-2">
         {/* Left Column (Heading + Subtext + Trust Badges) */}
-        <div className="md:col-span-7 flex flex-col items-start text-left gap-5">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="md:col-span-7 flex flex-col items-start text-left gap-5"
+        >
           {/* Tricolor Strip (Section 6, Item 3) */}
           <div 
             className="h-[3px] w-12 rounded-[2px]" 
@@ -133,10 +138,15 @@ export const LandingView: React.FC<LandingViewProps> = ({
               </motion.div>
             </AnimatePresence>
           </div>
-        </div>
+        </motion.div>
 
         {/* Right Column (How it works) */}
-        <div className="md:col-span-5 w-full flex justify-center md:justify-end self-start">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 }}
+          className="md:col-span-5 w-full flex justify-center md:justify-end self-start"
+        >
           <div 
             className="bg-white border border-[#EDE8E3] rounded-[14px] p-5 md:p-4.5 w-full md:max-w-[340px] self-start text-left"
             id="how-it-works-card"
@@ -147,7 +157,11 @@ export const LandingView: React.FC<LandingViewProps> = ({
 
             <div className="flex flex-col gap-3.5">
               {/* Step 1 */}
-              <div className="flex gap-3 items-start">
+              <motion.div 
+                whileHover={{ x: 3 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                className="flex gap-3 items-start cursor-default"
+              >
                 <div className="flex flex-col items-center shrink-0">
                   <div className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold bg-[#FEF0E8] text-[#E8571A]">
                     1
@@ -164,10 +178,14 @@ export const LandingView: React.FC<LandingViewProps> = ({
                       : 'Take a picture of the civic issue — pothole, garbage, broken light, or water leakage.'}
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Step 2 */}
-              <div className="flex gap-3 items-start">
+              <motion.div 
+                whileHover={{ x: 3 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                className="flex gap-3 items-start cursor-default"
+              >
                 <div className="flex flex-col items-center shrink-0">
                   <div className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold bg-[#EEF2F8] text-[#1A3057]">
                     2
@@ -184,10 +202,14 @@ export const LandingView: React.FC<LandingViewProps> = ({
                       : 'Our system reads your photo and sends it to the right municipal department instantly.'}
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Step 3 */}
-              <div className="flex gap-3 items-start">
+              <motion.div 
+                whileHover={{ x: 3 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                className="flex gap-3 items-start cursor-default"
+              >
                 <div className="flex flex-col items-center shrink-0">
                   <div className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold bg-[#E8F5E3] text-[#138808]">
                     3
@@ -203,7 +225,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
                       : 'Get a tracking link on your email. Follow every update until the issue is resolved.'}
                   </p>
                 </div>
-              </div>
+              </motion.div>
             </div>
 
             {/* Footer */}
@@ -216,13 +238,17 @@ export const LandingView: React.FC<LandingViewProps> = ({
               </span>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Portal Cards Section */}
       <div className="grid md:grid-cols-2 gap-6 w-full mt-0" id="portal-cards">
         {/* Citizen Card */}
-        <div 
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.75, ease: "easeOut" }}
           className="bg-white border border-[#EDE8E3] border-l-4 border-l-[#E8571A] rounded-[14px] p-6 flex flex-col justify-between hover:shadow-[0_8px_30px_rgba(26,48,87,0.04)] transition-all duration-300 shadow-xs"
           id="citizen-card"
         >
@@ -283,10 +309,14 @@ export const LandingView: React.FC<LandingViewProps> = ({
               <span>{currentLang === 'en' ? 'Track your complaint' : 'शिकायत ट्रैक करें'}</span>
             </button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Municipal Official Card */}
-        <div 
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.75, ease: "easeOut", delay: 0.1 }}
           className="bg-[#F8FAFD] border border-[#EDE8E3] border-l-4 border-l-[#1A3057] rounded-[14px] p-6 flex flex-col justify-between hover:shadow-[0_8px_30px_rgba(26,48,87,0.04)] transition-all duration-300 shadow-xs"
           id="admin-card"
         >
@@ -353,7 +383,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
             </svg>
             <span>{currentLang === 'en' ? 'Admin Login' : 'प्रशासनिक लॉगिन'}</span>
           </button>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
