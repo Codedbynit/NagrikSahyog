@@ -117,6 +117,8 @@ app.post("/api/send-confirmation-email", async (req, res) => {
 
   const deptLabel = deptMap[department] || department;
   const timestamp = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+  const appUrl = req.headers.origin || "https://nagriksahyog.web.app";
+  const trackUrl = `${appUrl}/?view=track&id=${id}`;
 
   const emailHtml = `
     <!DOCTYPE html>
@@ -327,7 +329,7 @@ app.post("/api/send-confirmation-email", async (req, res) => {
             </div>
           </div>
 
-          <a href="#" class="btn-track">Access Live Ticket Tracking Link</a>
+          <a href="${trackUrl}" class="btn-track">Access Live Ticket Tracking Link</a>
           
           <p style="font-size: 12px; color: #718096; line-height: 1.5; margin-top: 24px;">
             Our 48-hour Service Level Agreement (SLA) ensures that your ticket is triaged, assigned, and resolved promptly. You will receive secondary email alerts once a local contractor takes action.

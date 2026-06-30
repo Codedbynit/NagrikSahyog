@@ -52,6 +52,15 @@ export default function App() {
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
+  // Parse URL for magic link
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const viewParam = params.get('view');
+    if (viewParam === 'track') {
+      setCurrentView('track');
+    }
+  }, []);
+
   // Notification States
   const [unreadNotifCount, setUnreadNotifCount] = useState(0);
   const [isNotifDrawerOpen, setIsNotifDrawerOpen] = useState(false);

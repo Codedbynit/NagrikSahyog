@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Language, Issue, IssueStatus, AppView, Department } from '../types';
 import { translations } from '../data/translations';
 import { 
@@ -31,6 +31,26 @@ export const CitizenTrackFlow: React.FC<CitizenTrackFlowProps> = ({
   const [ratingHover, setRatingHover] = useState<number>(0);
   const [feedbackTextInput, setFeedbackTextInput] = useState('');
   const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+
+  // Auto-lookup if ID is in URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const urlId = params.get('id');
+    if (urlId && issues.length > 0) {
+      setLookupId(urlId);
+      const formattedId = urlId.trim().toUpperCase();
+      const found = issues.find(i => i.id === formattedId);
+      if (found) {
+        setActiveIssue(found);
+        setRatingInput(found.rating || 0);
+        setFeedbackTextInput(found.feedbackText || '');
+        setLookupError('');
+      } else {
+        setActiveIssue(null);
+        setLookupError(t.track_ticket_not_found || "Ticket not found. Please double-check the ID.");
+      }
+    }
+  }, [issues, t.track_ticket_not_found]);
 
   const handleLookup = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
