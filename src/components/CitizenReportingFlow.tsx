@@ -157,7 +157,9 @@ export const CitizenReportingFlow: React.FC<CitizenReportingFlowProps> = ({
       reader.onloadend = () => {
         compressImage(reader.result as string).then(compressed => {
           setBeforeImage(compressed);
-          setDetectedDept('pwd');
+          const depts: Department[] = ['pwd', 'sanitation', 'electricity', 'water'];
+          const randomDept = depts[Math.floor(Math.random() * depts.length)];
+          setDetectedDept(randomDept);
           setAiConfidence(Math.floor(Math.random() * 12) + 85);
           
           setTimeout(() => {
