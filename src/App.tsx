@@ -11,7 +11,7 @@ import { ContractorPortal } from './components/ContractorPortal';
 import { Sparkles, Heart } from 'lucide-react';
 import { collection, onSnapshot, doc, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
-import { db, auth, handleFirestoreError, OperationType, cleanUndefined } from './lib/firebase';
+import { db, auth, handleFirestoreError, OperationType, cleanUndefined, isFirebaseConfigured } from './lib/firebase';
 import { motion } from 'motion/react';
 
 const DEFAULT_ISSUES: Issue[] = [
@@ -79,6 +79,11 @@ export default function App() {
 
   // Load issues from backend Firestore on mount with a real-time snapshot listener
   useEffect(() => {
+    if (!isFirebaseConfigured) {
+      setCheckingAuth(false);
+      return;
+    }
+
     const unsub = onSnapshot(
       collection(db, 'issues'),
       (snapshot) => {
@@ -129,8 +134,10 @@ export default function App() {
     setIssues((prev) => [newIssue, ...prev]);
 
     // Save directly to Firestore
-    setDoc(doc(db, 'issues', newId), cleanUndefined(newIssue))
-      .catch((err) => handleFirestoreError(err, OperationType.CREATE, `issues/${newId}`));
+    if (isFirebaseConfigured) {
+      setDoc(doc(db, 'issues', newId), cleanUndefined(newIssue))
+        .catch((err) => handleFirestoreError(err, OperationType.CREATE, `issues/${newId}`));
+    }
 
     return newId;
   };
@@ -154,31 +161,37 @@ export default function App() {
     setIssues((prev) => prev.map((item) => (item.id === id ? updatedIssue : item)));
 
     // Save directly to Firestore using setDoc (so if it's a memory-only seed issue, it is created automatically)
-    setDoc(doc(db, 'issues', id), cleanUndefined(updatedIssue))
-      .then(() => {
-        // Trigger status email notifications via Resend for dispatched & resolved states
-        if (newStatus === 'in_progress' || newStatus === 'resolved') {
-          console.log(`[Status Update] Triggering notification dispatch for ticket ${id} [Status: ${newStatus}]`);
-          fetch('/api/send-status-email', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              issue: updatedIssue,
-              newStatus: newStatus,
-            }),
+    const sendStatusEmail = () => {
+      // Trigger status email notifications via Resend for dispatched & resolved states
+      if (newStatus === 'in_progress' || newStatus === 'resolved') {
+        console.log(`[Status Update] Triggering notification dispatch for ticket ${id} [Status: ${newStatus}]`);
+        fetch('/api/send-status-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            issue: updatedIssue,
+            newStatus: newStatus,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(`[Status Notification Success]:`, data);
           })
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(`[Status Notification Success]:`, data);
-            })
-            .catch((err) => {
-              console.error(`[Status Notification Network/Fetch Error]:`, err);
-            });
-        }
-      })
-      .catch((err) => handleFirestoreError(err, OperationType.UPDATE, `issues/${id}`));
+          .catch((err) => {
+            console.error(`[Status Notification Network/Fetch Error]:`, err);
+          });
+      }
+    };
+
+    if (isFirebaseConfigured) {
+      setDoc(doc(db, 'issues', id), cleanUndefined(updatedIssue))
+        .then(() => sendStatusEmail())
+        .catch((err) => handleFirestoreError(err, OperationType.UPDATE, `issues/${id}`));
+    } else {
+      sendStatusEmail();
+    }
   };
 
   // Delete issue (useful for admin housekeeping)
@@ -186,8 +199,10 @@ export default function App() {
     // Optimistically update local state
     setIssues((prev) => prev.filter((item) => item.id !== id));
 
-    deleteDoc(doc(db, 'issues', id))
-      .catch((err) => handleFirestoreError(err, OperationType.DELETE, `issues/${id}`));
+    if (isFirebaseConfigured) {
+      deleteDoc(doc(db, 'issues', id))
+        .catch((err) => handleFirestoreError(err, OperationType.DELETE, `issues/${id}`));
+    }
   };
 
   const handleSignOut = () => {

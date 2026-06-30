@@ -13,27 +13,15 @@ const finalConfig = {
   measurementId: metaEnv.VITE_FIREBASE_MEASUREMENT_ID || "",
 };
 
-try {
-  const firebaseConfig = require('../../firebase-applet-config.json');
-  finalConfig.apiKey = finalConfig.apiKey || firebaseConfig.apiKey;
-  finalConfig.authDomain = finalConfig.authDomain || firebaseConfig.authDomain;
-  finalConfig.projectId = finalConfig.projectId || firebaseConfig.projectId;
-  finalConfig.storageBucket = finalConfig.storageBucket || firebaseConfig.storageBucket;
-  finalConfig.messagingSenderId = finalConfig.messagingSenderId || firebaseConfig.messagingSenderId;
-  finalConfig.appId = finalConfig.appId || firebaseConfig.appId;
-  finalConfig.measurementId = finalConfig.measurementId || firebaseConfig.measurementId;
-} catch (e) {
-  // Config file not found, continuing with env variables or empty config
+// Fallback to fetch or ignore if not present since we can't use require
+if (!finalConfig.apiKey) {
+    console.warn("Firebase config is missing or VITE_FIREBASE_API_KEY is not set.");
 }
 
-const app = initializeApp(finalConfig);
-let firestoreDbId = '(default)';
-try {
-  const firebaseConfig = require('../../firebase-applet-config.json');
-  firestoreDbId = (firebaseConfig as any).firestoreDatabaseId || '(default)';
-} catch (e) {}
+export const isFirebaseConfigured = !!finalConfig.apiKey;
 
-const dbId = metaEnv.VITE_FIREBASE_DATABASE_ID || firestoreDbId || '(default)';
+const app = initializeApp(finalConfig);
+const dbId = metaEnv.VITE_FIREBASE_DATABASE_ID || '(default)';
 export const db = initializeFirestore(app, {
   experimentalForceLongPolling: true,
 }, dbId);
