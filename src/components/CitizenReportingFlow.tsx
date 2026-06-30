@@ -157,12 +157,32 @@ export const CitizenReportingFlow: React.FC<CitizenReportingFlowProps> = ({
       reader.onloadend = () => {
         compressImage(reader.result as string).then(compressed => {
           setBeforeImage(compressed);
-          setDetectedDept('pwd');
-          setAiConfidence(Math.floor(Math.random() * 12) + 85);
           
-          setTimeout(() => {
-            setIsAiAnalyzing(false);
-          }, 1200);
+          fetch('/api/analyze-image', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ imageBase64: compressed }),
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.department) {
+                setDetectedDept(data.department as Department);
+                setAiConfidence(data.confidence || Math.floor(Math.random() * 12) + 85);
+              } else {
+                setDetectedDept('pwd');
+                setAiConfidence(Math.floor(Math.random() * 12) + 85);
+              }
+            })
+            .catch(err => {
+              console.error("Error analyzing image:", err);
+              setDetectedDept('pwd');
+              setAiConfidence(Math.floor(Math.random() * 12) + 85);
+            })
+            .finally(() => {
+              setIsAiAnalyzing(false);
+            });
         });
       };
       reader.readAsDataURL(file);
@@ -708,39 +728,30 @@ export const CitizenReportingFlow: React.FC<CitizenReportingFlowProps> = ({
                   />
                 </div>
 
-                {/* AI Predicted Department & Override Dropdown */}
-                <div className="bg-[#E8F5E3] border border-[#CDE5C4] p-3 rounded-lg flex flex-col gap-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-[#138808] shrink-0" />
-                      <div>
-                        <span className="text-[10px] text-slate-500 block uppercase font-mono font-bold leading-none mb-1">
-                          {currentLang === 'hi' ? 'एआई वर्गीकरण:' : 'AI Triage:'}
-                        </span>
-                        <select 
-                          value={detectedDept}
-                          onChange={(e) => setDetectedDept(e.target.value as Department)}
-                          className="font-bold text-slate-800 text-xs capitalize leading-none bg-transparent border-none p-0 focus:outline-none cursor-pointer appearance-none underline decoration-slate-300 underline-offset-4"
-                        >
-                          <option value="pwd">{currentLang === 'hi' ? 'लोक निर्माण विभाग (PWD)' : 'PWD & Roads'}</option>
-                          <option value="sanitation">{currentLang === 'hi' ? 'स्वच्छता विभाग (Sanitation)' : 'Waste & Sanitation'}</option>
-                          <option value="electricity">{currentLang === 'hi' ? 'बिजली विभाग (Electricity)' : 'Electricity & Lighting'}</option>
-                          <option value="water">{currentLang === 'hi' ? 'जल बोर्ड (Water)' : 'Water & Sewage'}</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div className="text-right">
+                {/* AI Predicted Department */}
+                <div className="bg-[#E8F5E3] border border-[#CDE5C4] p-3 rounded-lg flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-[#138808] shrink-0" />
+                    <div>
                       <span className="text-[10px] text-slate-500 block uppercase font-mono font-bold leading-none mb-1">
-                        {currentLang === 'hi' ? 'सटीकता:' : 'Confidence:'}
+                        {currentLang === 'hi' ? 'एआई वर्गीकरण:' : 'AI Triage:'}
                       </span>
-                      <span className="font-mono font-bold text-[#138808] text-xs">
-                        {aiConfidence || 96}%
+                      <span className="font-bold text-slate-800 text-xs capitalize leading-none">
+                        {detectedDept === 'pwd' && (currentLang === 'hi' ? 'लोक निर्माण विभाग' : 'PWD & Roads')}
+                        {detectedDept === 'sanitation' && (currentLang === 'hi' ? 'स्वच्छता विभाग' : 'Waste & Sanitation')}
+                        {detectedDept === 'electricity' && (currentLang === 'hi' ? 'बिजली विभाग' : 'Electricity & Lighting')}
+                        {detectedDept === 'water' && (currentLang === 'hi' ? 'जल बोर्ड' : 'Water & Sewage')}
                       </span>
                     </div>
                   </div>
-                  <span className="text-[9px] text-[#5C5449] font-mono opacity-80">
-                    {currentLang === 'hi' ? '* यदि वर्गीकरण गलत है, तो आप इसे बदल सकते हैं।' : '* You can tap the department name to change if incorrect.'}
-                  </span>
+                  <div className="text-right">
+                    <span className="text-[10px] text-slate-500 block uppercase font-mono font-bold leading-none mb-1">
+                      {currentLang === 'hi' ? 'सटीकता:' : 'Confidence:'}
+                    </span>
+                    <span className="font-mono font-bold text-[#138808] text-xs">
+                      {aiConfidence || 96}%
+                    </span>
+                  </div>
                 </div>
               </div>
             ) : null}

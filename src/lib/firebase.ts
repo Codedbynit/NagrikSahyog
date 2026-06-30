@@ -8,9 +8,9 @@ const finalConfig = {
   authDomain: metaEnv.VITE_FIREBASE_AUTH_DOMAIN || "nagriksahyog.firebaseapp.com",
   projectId: metaEnv.VITE_FIREBASE_PROJECT_ID || "nagriksahyog",
   storageBucket: metaEnv.VITE_FIREBASE_STORAGE_BUCKET || "nagriksahyog.firebasestorage.app",
-  messagingSenderId: metaEnv.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
-  appId: metaEnv.VITE_FIREBASE_APP_ID || "",
-  measurementId: metaEnv.VITE_FIREBASE_MEASUREMENT_ID || "",
+  messagingSenderId: metaEnv.VITE_FIREBASE_MESSAGING_SENDER_ID || "1086189916282",
+  appId: metaEnv.VITE_FIREBASE_APP_ID || "1:1086189916282:web:eb5f33f15ab29f8202ebc3",
+  measurementId: metaEnv.VITE_FIREBASE_MEASUREMENT_ID || "G-X12BFCXDJV",
 };
 
 // Fallback to fetch or ignore if not present since we can't use require
