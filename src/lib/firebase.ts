@@ -4,10 +4,10 @@ import { initializeFirestore, doc, getDocFromServer } from 'firebase/firestore';
 // Support both client environment variables and fallback json config
 const metaEnv = (import.meta as any).env || {};
 const finalConfig = {
-  apiKey: metaEnv.VITE_FIREBASE_API_KEY || "",
-  authDomain: metaEnv.VITE_FIREBASE_AUTH_DOMAIN || "",
-  projectId: metaEnv.VITE_FIREBASE_PROJECT_ID || "",
-  storageBucket: metaEnv.VITE_FIREBASE_STORAGE_BUCKET || "",
+  apiKey: metaEnv.VITE_FIREBASE_API_KEY || "AIzaSyBzRZ8CehctdjU6300YqK2-nWZlIJ-rbMM",
+  authDomain: metaEnv.VITE_FIREBASE_AUTH_DOMAIN || "nagriksahyog.firebaseapp.com",
+  projectId: metaEnv.VITE_FIREBASE_PROJECT_ID || "nagriksahyog",
+  storageBucket: metaEnv.VITE_FIREBASE_STORAGE_BUCKET || "nagriksahyog.firebasestorage.app",
   messagingSenderId: metaEnv.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
   appId: metaEnv.VITE_FIREBASE_APP_ID || "",
   measurementId: metaEnv.VITE_FIREBASE_MEASUREMENT_ID || "",

@@ -387,11 +387,13 @@ app.post("/api/send-status-email", async (req, res) => {
   const processedAfter = processImageForEmail(afterImage || beforeImage, "after");
 
   const attachments: any[] = [];
-  if (processedBefore.attachment) {
-    attachments.push(processedBefore.attachment);
-  }
-  if (processedAfter.attachment) {
-    attachments.push(processedAfter.attachment);
+  if (newStatus === "resolved") {
+    if (processedBefore.attachment) {
+      attachments.push(processedBefore.attachment);
+    }
+    if (processedAfter.attachment) {
+      attachments.push(processedAfter.attachment);
+    }
   }
 
   const deptMap: Record<string, string> = {
