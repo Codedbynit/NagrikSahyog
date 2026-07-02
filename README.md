@@ -10,6 +10,10 @@ Local municipal grievance systems often suffer from:
 3. **Data Loss:** When network connectivity drops, citizens may lose the reports they've spent time filling out.
 4. **Manual Triage:** Municipal authorities waste time manually routing tickets to the correct departments.
 
+## Links :-
+-**Live Web App:** https://nagrik-sahyog.vercel.app/
+-**Detailed Doc:** https://docs.google.com/document/d/1TTd21D-Y5Php_ZKK9RfVrDOlh-UtHzz-G3dcf89GNoE/edit?usp=sharing
+
 **Nagrik Sahyog** solves this by offering:
 - **Bilingual Interface:** Instant switching between English and Hindi.
 - **Offline First:** Users can prepare reports without internet connectivity, and they are synced with the server once the connection is restored.
